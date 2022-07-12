@@ -6,78 +6,14 @@
  * @flow strict-local
  */
 
-import React, {useEffect, useState} from 'react';
-import {
-  Button,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import React, {useState} from 'react';
+import {Button, StyleSheet, TextInput, View} from 'react-native';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
-const HomeScreen = ({navigation, route}) => {
-  useEffect(() => {
-    if (route.params?.post) {
-      console.log(route);
-    }
-  }, [route]);
-
-  return (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.sectionTitle}>Home Screen</Text>
-      <Button
-        title="Create Post"
-        onPress={() => navigation.navigate('Create Post')}
-      />
-      <Text>Post : {route.params?.post}</Text>
-      <Button
-        title="Go to Detail"
-        onPress={() =>
-          navigation.navigate('Details', {
-            itemId: 86,
-            otherParam: 'anything you want here',
-          })
-        }
-      />
-    </View>
-  );
-};
-
-const DetailsScreen = ({route, navigation}) => {
-  const {itemId, otherParam} = route.params;
-  return (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.sectionTitle}>Home Screen</Text>
-      <Text>itemId : {JSON.stringify(itemId)}</Text>
-      <Text>otherParam : {JSON.stringify(otherParam)}</Text>
-      <Button
-        style={styles.button}
-        title="Go to Home"
-        onPress={() => navigation.navigate('Home')}
-      />
-      <Button
-        style={styles.button}
-        title="Go to Details ... again"
-        onPress={() =>
-          navigation.push('Details', {
-            itemId: Math.floor(Math.random() * 100),
-          })
-        }
-      />
-      <Button
-        style={styles.button}
-        title="Go Back"
-        onPress={() => navigation.goBack()}
-      />
-    </View>
-  );
-};
+import HomeScreen from './src/screen/Home';
+import DetailsScreen from './src/screen/Details';
+import MainScreen from './src/screen/Main';
 
 const CreatePostScreen = ({navigation}) => {
   const [postText, setPostText] = useState('');
@@ -109,6 +45,11 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
+        {/* <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          options={{headerShown: false}}
+        /> */}
         <Stack.Screen
           name="Home"
           component={HomeScreen}
