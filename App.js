@@ -8,12 +8,13 @@
 
 import React, {useState} from 'react';
 import {Button, StyleSheet, TextInput, View} from 'react-native';
-
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from './src/screen/Home';
 import DetailsScreen from './src/screen/Details';
 import MainScreen from './src/screen/Main';
+import Screen1 from './src/screen/Screen1';
+import Screen2 from './src/screen/Screen2';
 
 const CreatePostScreen = ({navigation}) => {
   const [postText, setPostText] = useState('');
@@ -45,11 +46,11 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        {/* <Stack.Screen
-          name="Main"
-          component={MainScreen}
-          options={{headerShown: false}}
-        /> */}
+        {/* <Stack.Screen name="Drawer" component={DrawerScreen} /> */}
+        {/* <RightDrawer /> */}
+        <Stack.Screen name="Main" component={MainScreen} />
+        <Stack.Screen name="Screen1" component={Screen1} />
+        <Stack.Screen name="Screen2" component={Screen2} />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
