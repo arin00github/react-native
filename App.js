@@ -6,86 +6,110 @@
  * @flow strict-local
  */
 
-import React, {useState} from 'react';
-import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
+import React, {useEffect, useMemo, useReducer, useState} from 'react';
+import {Button, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+
 import HomeScreen from './src/screen/Home';
-import DetailsScreen from './src/screen/Details';
-import MainScreen from './src/screen/Main';
-import Screen1 from './src/screen/Screen1';
-import Screen2 from './src/screen/Screen2';
-
-const CreatePostScreen = ({navigation}) => {
-  const [postText, setPostText] = useState('');
-
-  return (
-    <>
-      <TextInput
-        multiline
-        placeholder="What's on your mind"
-        value={postText}
-        onChangeText={setPostText}
-      />
-      <Button
-        title="Done"
-        onPress={() =>
-          navigation.navigate({
-            name: 'Home',
-            params: {post: postText},
-          })
-        }
-      />
-    </>
-  );
-};
-
-const Drawer = createDrawerNavigator();
-
-const MenuScrren = () => {
-  return (
-    <View>
-      <Text>Menu</Text>
-    </View>
-  );
-};
+import {AuthContext} from './src/comtext/AuthContext';
+import SplashScreen from './src/screen/Splash';
+import SignInScreen from './src/screen/SignIn';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
+  const [state, dispatch] = useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'RESTORE_TOKEN':
+          return {
+            ...prevState,
+            userToken: action.token,
+            isLoading: false,
+          };
+        case 'SIGN_IN':
+          const {username, password} = action.payload;
+          if ((username === 'happy', password === 'happy')) {
+            return {
+              ...prevState,
+              isSingout: false,
+              userToken: action.payload.token,
+            };
+          } else {
+            // eslint-disable-next-line no-alert
+            alert('invalid account information');
+            return {
+              ...prevState,
+            };
+          }
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            isSingout: true,
+            userToken: null,
+          };
+        case 'GO_TO_LOGIN':
+          return {
+            ...prevState,
+            isLoading: false,
+          };
+      }
+    },
+    {isLoading: true, isSingout: true, userToken: null},
+  );
+
+  const authContext = useMemo(
+    () => ({
+      signIn: async data => {
+        dispatch({
+          type: 'SIGN_IN',
+          payload: {
+            token: 'dummy-auth-token',
+            password: data.password,
+            username: data.username,
+          },
+        });
+      },
+      signOut: () => dispatch({type: 'SIGN_OUT'}),
+      signUp: async data => {
+        dispatch({type: 'SIGN_UP', token: 'dummy-auth-token'});
+      },
+      goToLogin: () => dispatch({type: 'GO_TO_LOGIN'}),
+    }),
+    [],
+  );
+
+  useEffect(() => {
+    console.log('useEffect');
+    // const bootstrapAsync = async () => {
+    //   const userToken = 'dummy-auth-token';
+    //   dispatch({type: 'RESTORE_TOKEN', token: userToken});
+    // };
+    // bootstrapAsync();
+  }, []);
 
   return (
-    <NavigationContainer>
-      {/* <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Menu" component={MenuScrren} />
-      </Drawer.Navigator> */}
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Main" component={MainScreen} />
-        <Stack.Screen name="Screen1" component={Screen1} />
-        <Stack.Screen name="Screen2" component={Screen2} />
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            title: 'My home',
-            headerStyle: {
-              backgroundColor: '#f4511e',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              textAlign: 'center',
-              width: '100%',
-            },
-          }}
-        />
-        <Stack.Screen
-          name="Details"
-          component={DetailsScreen}
-          initialParams={{itemId: 100}}
-        />
-        <Stack.Screen name="Create Post" component={CreatePostScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContext.Provider value={authContext}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {state.isLoading && (
+            <Stack.Screen name="Splash" component={SplashScreen} />
+          )}
+          {!state.isLoading && state.userToken ? (
+            <Stack.Screen name="Home" component={HomeScreen} />
+          ) : (
+            <Stack.Screen
+              name="SignIn"
+              component={SignInScreen}
+              options={{
+                title: 'sign in',
+                animationTypeForReplace: state.isSingout ? 'pop' : 'push',
+              }}
+            />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 };
 

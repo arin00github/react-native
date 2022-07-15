@@ -1,56 +1,16 @@
-import React, {useEffect} from 'react';
-import {View, Button, Text, StyleSheet} from 'react-native';
+import React from 'react';
+import {Button, Text, View} from 'react-native';
+import {AuthContext} from '../comtext/AuthContext';
 
-const HomeScreen = ({navigation, route}) => {
-  useEffect(() => {
-    if (route.params?.post) {
-      console.log(route);
-    }
-  }, [route]);
-
+function HomeScreen() {
+  //const {} = React.useContext();
+  const {signOut} = React.useContext(AuthContext);
   return (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.sectionTitle}>Home Screen</Text>
-      <Button
-        title="Create Post"
-        onPress={() => navigation.navigate('Create Post')}
-      />
-      <Text>Post : {route.params?.post}</Text>
-      <Button
-        title="Go to Detail"
-        onPress={() =>
-          navigation.navigate('Details', {
-            itemId: 86,
-            otherParam: 'anything you want here',
-          })
-        }
-      />
-      <Button title="Go to Main" onPress={() => navigation.navigate('Main')} />
+    <View>
+      <Text>Signed in!</Text>
+      <Button title="sign out" onPress={() => signOut()} />
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    textAlign: 'center',
-    padding: 16,
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  button: {
-    paddingTop: 12,
-    marginTop: 12,
-  },
-});
+}
 
 export default HomeScreen;
